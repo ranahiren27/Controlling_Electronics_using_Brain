@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Input Sender</title>
+</head>
+<body>
+	<form action="predect">
+		<div id="data">
+		</div>
+	</form>
+
+	<script type="text/javascript">
+		let dataPointer = document.getElementById('data');
+		let datas = "";
+		for(let i=0; i<10; i++){	
+			datas += "<input type='hidden' value="+Math.random()+" name='n"+i+"'></br>";
+		}
+		dataPointer.innerHTML = datas;
+	</script>
+</body>
+</html>

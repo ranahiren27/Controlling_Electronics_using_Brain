@@ -1,0 +1,90 @@
+/*
+ * HTTP Client POST Request
+ * Copyright (c) 2018, circuits4you.com
+ * All rights reserved.
+ * https://circuits4you.com 
+ * Connects to WiFi HotSpot. */
+
+#include <ESP8266WiFi.h>
+#include <WiFiClient.h> 
+#include <ESP8266WebServer.h>
+#define LED D4
+ESP8266WebServer server(80);
+/* Set these to your desired credentials. */
+const char *ssid = "MeloDrama";  //ENTER YOUR WIFI SETTINGS
+const char *password = "";
+
+//=======================================================================
+//                    Power on setup
+//=======================================================================
+
+
+void setup() {
+  pinMode(LED, OUTPUT);
+  Serial.begin(115200);
+  WiFi.mode(WIFI_OFF);        //Prevents reconnection issue (taking too long to connect)
+  delay(1000);
+  WiFi.mode(WIFI_STA);        //This line hides the viewing of ESP as wifi hotspot
+  
+  WiFi.begin(ssid, password);     //Connect to your WiFi router
+  Serial.println("");
+
+  Serial.print("Connecting");
+  // Wait for connection
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  //If connection successful show IP address in serial monitor
+  Serial.println("");
+  Serial.print("Connected to ");
+  Serial.println(ssid);
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());  //IP address assigned to your ESP
+
+  server.on("/", [](){
+    server.send(200, "text/html", "<!DOCTYPE html><html><head><title>Cotrol</title></head><body> <a href='/up'><button>UP</button></a> <br>  <a href='/down'><button>Down</button></a> <br>  <a href='/r'><button>right</button></a> <br>  <a href='/l'><button>left</button></a> <br>  </body> </html>");
+  });
+
+//  server.on("/up", [](){
+//    server.send(200,"text/html", "<h1>up</h1>");
+//  });
+//  
+//  server.on("/down", [](){
+//    server.send(200,"text/html", "<h1>Down</h1>");
+//  });
+//
+//  server.on("/r", [](){
+//    server.send(200,"text/html", "<h1>Right</h1>");
+//  });
+//
+//  server.on("/l", [](){
+//    server.send(200,"text/html", "<h1>left</h1>");
+//  });
+
+    server.on("/on",[](){
+      digitalWrite(LED, LOW);
+      server.send(200, "text/html", "on");
+    });
+    
+    server.on("/off",[](){
+      digitalWrite(LED, HIGH);
+      server.send(200, "text/html", "off");
+    });
+    
+    server.on("/none",[](){
+      server.send(200, "text/html", "<h1>none operation</h1>");
+    });
+  server.begin();
+}
+
+//=======================================================================
+//                    Main Program Loop
+//=======================================================================
+void loop() {
+////  page = "<h1>Simple NodeMCU Web Server</h1><p>"+String(analogRead(0), DEC)+"</p>";
+//  g = String(analogRead(0), DEC);
+  server.handleClient();
+}
+//=======================================================================
